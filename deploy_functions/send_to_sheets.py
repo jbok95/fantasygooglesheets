@@ -34,12 +34,8 @@ def update_projections(player_list, workbook_title, sheet_title):
         workbook = gc.create(workbook_title)
         sheet = workbook.add_worksheet(title=sheet_title, rows=1, cols=1)
 
-    # Clear existing data in the sheet
-    sheet.clear()
-
     # Write headers
     headers = ["Name", "Team", "Position", "PFPTS", "Rank"]
-    sheet.append_row(headers)
 
     # Prepare a list of lists for batch update
     rows_to_update = [headers]
