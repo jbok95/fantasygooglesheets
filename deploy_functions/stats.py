@@ -84,11 +84,4 @@ def get_football_stats(player_stats, url):
     }
 
     # Return the new filtered stats
-    print(filtered_stats)
-
-if __name__ == "__main__":
-    my_url = [
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547612"
-    ]
-    my_player_stats = {}
-    get_football_stats(my_player_stats, my_url)
+    return filtered_stats

@@ -1,6 +1,6 @@
 """Main driver to update Google Sheets for Postseason Fantasy Football"""
 from deploy_functions.projections import get_projections
-from deploy_functions.send_to_sheets import update_projections
+from deploy_functions.send_to_sheets import update_projections, update_stats
 from deploy_functions.stats import get_football_stats
 
 
@@ -22,12 +22,15 @@ def main():
     # Update player stats
     player_stats = {}
     espn_urls = [
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547623"
+        "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
+        "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
+        "https://www.espn.com/nfl/boxscore/_/gameId/401547626"
     ]
     # Add stats for each game
     for url in espn_urls:
-        get_football_stats(player_stats, url)
+        filtered_stats = get_football_stats(player_stats, url)
     # Write stats to Google Sheet
+    update_stats(filtered_stats, "2024 Postseason Fantasy", "Practice")
 
 if __name__ == "__main__":
     main()
