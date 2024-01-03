@@ -1,53 +1,94 @@
-import requests
+"""Scrapes ESPN box scores and returns all player stats"""
 import json
+import requests
 from bs4 import BeautifulSoup
-from pprint import pprint
 
 def get_football_stats(player_stats, url):
+    '''
+    Scrapes ESPN box scores and returns all player stats
+
+    Parameters:
+    - url (str): url location of the ESPN box score
+
+    Returns:
+    - filtered_stats (dict): dictionary structured as {name: {stat: stat value}} for all players
+    '''
+
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-    response = requests.get(url, headers=headers)
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'+
+        ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    response = requests.get(url, headers=headers, timeout=5)
 
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-            
-        # Find all script tags
-        script_tags = soup.find_all('script')
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Iterate through script tags to find the one containing the JSON data
-        json_data = None
-        for script_tag in script_tags:
-            if "window['__espnfitt__']" in script_tag.text:
-                json_data = json.loads(script_tag.text.split("window['__espnfitt__']=", 1)[1].strip(';'))
-                break
+    # Find all script tags, which is where stats JSON is located
+    script_tags = soup.find_all('script')
 
-        if json_data:
-            # Extracting data from the JSON structure
-            bxscr_data = json_data['page']['content']['gamepackage']['bxscr']
+    # Iterate through script tags to find the one containing the target JSON data
+    json_data = None
+    for script_tag in script_tags:
+        if "window['__espnfitt__']" in script_tag.text:
+            json_data = json.loads(script_tag.text.split("window['__espnfitt__']=", 1)[1]
+                                   .strip(';'))
+            break
 
-            for bxscr_item in bxscr_data:
-                for stats_data in bxscr_item.get('stats', []):
-                    for athlt_data in stats_data['athlts']:
-                        # Extracting desired information
-                        stats_values = athlt_data['stats']
-                        athlete_name = athlt_data['athlt']['dspNm']
-                        keys = stats_data['lbls']
+    if json_data:
+        # Extracting the stats data from the JSON structure
+        bxscr_data = json_data['page']['content']['gamepackage']['bxscr']
 
-                        # Create a dictionary for the current athlete
-                        athlete_data = dict(zip(keys, stats_values))
+        for bxscr_item in bxscr_data:
+            for stats_data in bxscr_item.get('stats', []):
+                for athlt_data in stats_data['athlts']:
+                    # Extracting specific information
+                    stats_values = athlt_data['stats']
+                    athlete_name = athlt_data['athlt']['dspNm']
+                    keys = stats_data['keys']
 
-                        # Add the athlete data to the player_stats dictionary
-                        if athlete_name not in player_stats:
-                            player_stats[athlete_name] = {}
+                    # Create a dictionary for the current athlete
+                    athlete_data = dict(zip(keys, stats_values))
 
-                        # Add stats to the athletes
-                        for key in keys:
-                            player_stats[athlete_name][key] = athlete_data[key]
+                    # Add the athlete data to the player_stats dictionary
+                    if athlete_name not in player_stats:
+                        player_stats[athlete_name] = {}
 
-    # Print the new output
-    pprint(player_stats)
+                    # Add stats to the athletes
+                    for key in keys:
+                        player_stats[athlete_name][key] = athlete_data[key]
+
+    # Stats that I want to track
+    stat_filter = [
+        'passingTouchdowns',
+        'passingYards',
+        'interceptions',
+        'receivingTouchdowns',
+        'receivingYards',
+        'receptions',
+        'rushingTouchdowns',
+        'rushingYards',
+        'fumblesLost',
+        'kickReturnTouchdowns',
+        'puntReturnTouchdowns'
+    ]
+
+    # Filters to exclude all unnecessary stats
+    filtered_stats = {
+        athlete_name: {
+            key: value
+            for key, value in athlete_data.items()
+            if key in stat_filter
+        }
+        for athlete_name, athlete_data in player_stats.items()
+
+        # Removes any blank athlete names
+        if any(key in stat_filter for key in athlete_data)
+    }
+
+    # Return the new filtered stats
+    print(filtered_stats)
 
 if __name__ == "__main__":
-    player_stats = {}
-    url = "https://www.espn.com/nfl/boxscore/_/gameId/401547623"
-    get_football_stats(player_stats, url)
+    my_url = [
+        "https://www.espn.com/nfl/boxscore/_/gameId/401547612"
+    ]
+    my_player_stats = {}
+    get_football_stats(my_player_stats, my_url)

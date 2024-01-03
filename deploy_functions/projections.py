@@ -1,11 +1,20 @@
+"""Scrapes fantasypros.com and returns projections for the upcoming week"""
+import json
 import requests
 from bs4 import BeautifulSoup
-import json
-import gspread
-from google.oauth2.service_account import Credentials
 
 def get_projections(player_list, url):
-    response = requests.get(url)
+    '''
+    Scrapes FantasyPros and returns projected player points, appending to the initial list
+
+    Parameters:
+    - player_list (list): list of all players including position, team, rank, and proj. score
+    - url (str): url location of the ESPN box score
+
+    Returns:
+    - player_list (str): same as input but updated for existing data
+    '''
+    response = requests.get(url, timeout=5)
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -44,42 +53,3 @@ def get_projections(player_list, url):
         print(f"Error: {response.status_code}")
 
     return player_list
-
-def write_to_google_sheet(player_list, workbook_title, sheet_title):
-    creds = Credentials.from_service_account_file(r'C:\Users\Jamie\Downloads\postseasonfantasy-0fa7a5a5bb58.json', scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
-    gc = gspread.authorize(creds)
-
-    try:
-        # Open the workbook by title
-        workbook = gc.open(workbook_title)
-
-        # Try to open the sheet, create if it doesn't exist
-        try:
-            sheet = workbook.worksheet(sheet_title)
-        except gspread.exceptions.WorksheetNotFound:
-            sheet = workbook.add_worksheet(title=sheet_title, rows=1, cols=1)
-
-    except gspread.exceptions.SpreadsheetNotFound:
-        # Create the workbook if it doesn't exist
-        workbook = gc.create(workbook_title)
-        sheet = workbook.add_worksheet(title=sheet_title, rows=1, cols=1)
-
-    # Clear existing data in the sheet
-    sheet.clear()
-
-    # Write headers
-    headers = ["Name", "Team", "Position", "PFPTS", "Rank"]
-    sheet.append_row(headers)
-
-    # Prepare a list of lists for batch update
-    rows_to_update = [headers]
-
-    # Add player information to the list
-    for player_info in player_list:
-        row_data = [player_info['name'], player_info['team'], player_info['position'], player_info['pfpts'], player_info['rank']]
-        rows_to_update.append(row_data)
-
-    # Batch update the sheet with all rows
-    sheet.update('A1', rows_to_update)
-
-    print(f"Data written to Google Sheet: {workbook_title} - {sheet_title}")
