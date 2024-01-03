@@ -1,6 +1,19 @@
 """Sends data to Google Sheets"""
 import gspread
 from google.oauth2.service_account import Credentials
+import json
+
+def get_credentials():
+    # Load the service account credentials from the file
+    with open('deploy_functions/config.json', 'r') as f:
+        service_account_info = json.load(f)
+    
+    creds = Credentials.from_service_account_info(service_account_info,
+                                                  scopes=['https://www.googleapis.com/auth/spreadsheets',
+                                                          'https://www.googleapis.com/auth/drive'])
+    
+    return creds
+
 
 def update_projections(player_list, workbook_title, sheet_title):
     """
@@ -14,9 +27,7 @@ def update_projections(player_list, workbook_title, sheet_title):
     Returns:
     - None: returns a print success if able to write data
     """
-    creds = Credentials.from_service_account_file(r'C:\Users\Jamie\Downloads\postseasonfantasy-0fa7a5a5bb58.json',
-                                                  scopes=['https://www.googleapis.com/auth/spreadsheets',
-                                                          'https://www.googleapis.com/auth/drive'])
+    creds = get_credentials()
     gc = gspread.authorize(creds)
 
     try:
@@ -66,9 +77,7 @@ def update_stats(player_stats, workbook_title, sheet_title):
     Returns:
     - None: returns a print success if able to write data
     """
-    creds = Credentials.from_service_account_file(r'C:\Users\Jamie\Downloads\postseasonfantasy-0fa7a5a5bb58.json',
-                                                  scopes=['https://www.googleapis.com/auth/spreadsheets',
-                                                          'https://www.googleapis.com/auth/drive'])
+    creds = get_credentials()
     gc = gspread.authorize(creds)
 
     try:
