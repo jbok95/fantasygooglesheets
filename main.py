@@ -4,33 +4,58 @@ from deploy_functions.send_to_sheets import update_projections, update_stats
 from deploy_functions.stats import get_football_stats
 
 
-def main():
-    # """Drives all functions located in deploy_functions"""
-    # player_list = []
-    # fantasypros_urls = [
-    #     "https://www.fantasypros.com/nfl/rankings/qb.php",
-    #     "https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb.php",
-    #     "https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr.php",
-    #     "https://www.fantasypros.com/nfl/rankings/half-point-ppr-te.php"
-    # ]
-    # # Add projections for each position
-    # for url in fantasypros_urls:
-    #     get_projections(player_list, url)
-    # # Write projections data to Google Sheet
-    # update_projections(player_list, "2024 Postseason Fantasy", "Master Player Pool")
+def main(request):
+    """Drives all functions located in deploy_functions"""
+
+    # Takes inputs from local drive
+    if request == 0:
+        run_projections = True
+        workbook = "2024 Postseason Fantasy"
+        projections_worksheet = "Master Player Pool"
+        espn_urls = [
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
+        ]
+        stats_worksheet = "Wild Card Player Stats"
+
+    # Takes inputs from Cloud Scheduler
+    else:
+        request_json = request.json()
+        run_projections = request_json.get('run_projections')
+        workbook = request_json.get('workbook')
+        projections_worksheet = request_json.get('projections_worksheet')
+        espn_urls = request_json.get('espn_urls')
+        stats_worksheet = request_json.get('stats_worksheet')
+
+    # Reruns player projections if true
+    if run_projections:
+        player_list = []
+        fantasypros_urls = [
+            "https://www.fantasypros.com/nfl/rankings/qb.php",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb.php",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr.php",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-te.php"
+        ]
+        # Add projections for each position
+        for url in fantasypros_urls:
+            get_projections(player_list, url)
+        # Write projections data to Google Sheet
+        update_projections(player_list, workbook, projections_worksheet)
 
     # Update player stats
     player_stats = {}
-    espn_urls = [
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547626"
-    ]
     # Add stats for each game
     for url in espn_urls:
         filtered_stats = get_football_stats(player_stats, url)
     # Write stats to Google Sheet
-    update_stats(filtered_stats, "2024 Postseason Fantasy", "Super Bowl Player Stats")
+    update_stats(filtered_stats, workbook, stats_worksheet)
 
 if __name__ == "__main__":
-    main()
+    main(0)
