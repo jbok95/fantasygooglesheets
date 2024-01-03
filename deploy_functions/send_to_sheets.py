@@ -1,17 +1,20 @@
 """Sends data to Google Sheets"""
+import json
 import gspread
 from google.oauth2.service_account import Credentials
-import json
 
 def get_credentials():
+    """Gets GCloud Service Account credentials"""
     # Load the service account credentials from the file
-    with open('deploy_functions/config.json', 'r') as f:
+    with open('deploy_functions/config.json', 'r', encoding='utf-8') as f:
         service_account_info = json.load(f)
-    
-    creds = Credentials.from_service_account_info(service_account_info,
-                                                  scopes=['https://www.googleapis.com/auth/spreadsheets',
-                                                          'https://www.googleapis.com/auth/drive'])
-    
+
+    creds = Credentials.from_service_account_info(
+        service_account_info,
+        scopes=['https://www.googleapis.com/auth/spreadsheets',
+                'https://www.googleapis.com/auth/drive']
+                )
+
     return creds
 
 
