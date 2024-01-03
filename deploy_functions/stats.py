@@ -31,27 +31,21 @@ def get_football_stats(player_stats, url):
                         # Extracting desired information
                         stats_values = athlt_data['stats']
                         athlete_name = athlt_data['athlt']['dspNm']
-                        keys = stats_data['keys']
+                        keys = stats_data['lbls']
 
                         # Create a dictionary for the current athlete
                         athlete_data = dict(zip(keys, stats_values))
 
                         # Add the athlete data to the player_stats dictionary
-                        if keys[0] in player_stats:
-                            player_stats[keys[0]].update({athlete_name: athlete_data})
-                        else:
-                            player_stats[keys[0]] = {athlete_name: athlete_data}
-    
-    # Create a new dictionary with athlete names as main keys
-    new_output = {}
-    for stat_key, stat_value in player_stats.items():
-        for athlete_name, athlete_data in stat_value.items():
-            if athlete_name not in new_output:
-                new_output[athlete_name] = {}
-            new_output[athlete_name][stat_key] = athlete_data
+                        if athlete_name not in player_stats:
+                            player_stats[athlete_name] = {}
+
+                        # Add stats to the athletes
+                        for key in keys:
+                            player_stats[athlete_name][key] = athlete_data[key]
 
     # Print the new output
-    pprint(new_output)
+    pprint(player_stats)
 
 if __name__ == "__main__":
     player_stats = {}
