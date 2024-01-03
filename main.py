@@ -72,11 +72,19 @@ def write_to_google_sheet(player_list, workbook_title, sheet_title):
     headers = ["Name", "Team", "Position", "PFPTS", "Rank"]
     sheet.append_row(headers)
 
-    # Write player information to the sheet
+    # Prepare a list of lists for batch update
+    rows_to_update = [headers]
+
+    # Add player information to the list
     for player_info in player_list:
-        sheet.append_row([player_info['name'], player_info['team'], player_info['position'], player_info['pfpts'], player_info['rank']])
+        row_data = [player_info['name'], player_info['team'], player_info['position'], player_info['pfpts'], player_info['rank']]
+        rows_to_update.append(row_data)
+
+    # Batch update the sheet with all rows
+    sheet.update('A1', rows_to_update)
 
     print(f"Data written to Google Sheet: {workbook_title} - {sheet_title}")
+
 
 if __name__ == "__main__":
     player_list = []
