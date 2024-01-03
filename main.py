@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import json
 import gspread
 from google.oauth2.service_account import Credentials
-import time
 
 def get_projections(player_list, url):
     response = requests.get(url)
@@ -89,17 +88,17 @@ def write_to_google_sheet(player_list, workbook_title, sheet_title):
 if __name__ == "__main__":
     player_list = []
 
-    # Add QBs
+    # Add QB projections
     get_projections(player_list, "https://www.fantasypros.com/nfl/rankings/qb.php")
 
-    # Add RBs
+    # Add RB projections
     get_projections(player_list, "https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb.php")
 
-    # Add WRs
+    # Add WR projections
     get_projections(player_list, "https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr.php")
 
-    # Add TEs
+    # Add TE projections
     get_projections(player_list, "https://www.fantasypros.com/nfl/rankings/half-point-ppr-te.php")
 
     # Write data to Google Sheet
-    write_to_google_sheet(player_list, "2024 Postseason Fantasy", "Practice")
+    write_to_google_sheet(player_list, "2024 Postseason Fantasy", "Master Player Pool")
