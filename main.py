@@ -9,7 +9,7 @@ def postseasonfantasy(request):
     """Drives all functions located in deploy_functions"""
 
     # Takes inputs from local drive
-    if request == {}:
+    if request is None:
         run_projections = True
         workbook = "2024 Postseason Fantasy"
         projections_worksheet = "Master Player Pool"
@@ -28,8 +28,14 @@ def postseasonfantasy(request):
 
     # Takes inputs from Cloud Scheduler
     else:
-        # request_json = request.json()
-        request_json = json.loads(request)
+        # If request is from local json
+        if isinstance(request, str):
+            request_json = json.loads(request)
+
+        # If request is from Cloud Scheduler request
+        else:
+            request_json = request.get_json()
+
         run_projections = request_json.get('run_projections')
         workbook = request_json.get('workbook')
         projections_worksheet = request_json.get('projections_worksheet')
