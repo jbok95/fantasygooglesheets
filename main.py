@@ -8,31 +8,31 @@ def postseasonfantasy(request):
     """Drives all functions located in deploy_functions"""
 
     # Takes inputs from local drive
-    # if request == 0:
-    run_projections = True
-    workbook = "2024 Postseason Fantasy"
-    projections_worksheet = "Master Player Pool"
-    espn_urls = [
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
-        "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
-    ]
-    stats_worksheet = "Wild Card Player Stats"
+    if request == {}:
+        run_projections = True
+        workbook = "2024 Postseason Fantasy"
+        projections_worksheet = "Master Player Pool"
+        espn_urls = [
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
+        ]
+        stats_worksheet = "Wild Card Player Stats"
 
-    # # Takes inputs from Cloud Scheduler
-    # else:
-    #     request_json = request.json()
-    #     run_projections = request_json.get('run_projections')
-    #     workbook = request_json.get('workbook')
-    #     projections_worksheet = request_json.get('projections_worksheet')
-    #     espn_urls = request_json.get('espn_urls')
-    #     stats_worksheet = request_json.get('stats_worksheet')
+    # Takes inputs from Cloud Scheduler
+    else:
+        request_json = request.json()
+        run_projections = request_json.get('run_projections')
+        workbook = request_json.get('workbook')
+        projections_worksheet = request_json.get('projections_worksheet')
+        espn_urls = request_json.get('espn_urls')
+        stats_worksheet = request_json.get('stats_worksheet')
 
     # Reruns player projections if true
     if run_projections:
@@ -58,4 +58,4 @@ def postseasonfantasy(request):
     update_stats(filtered_stats, workbook, stats_worksheet)
 
 if __name__ == "__main__":
-    postseasonfantasy(0)
+    postseasonfantasy({})

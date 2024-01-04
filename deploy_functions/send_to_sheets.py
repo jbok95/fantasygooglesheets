@@ -45,7 +45,7 @@ def get_credentials():
     ver_id = 1
 
     service_account_info = access_secret_version(proj_id, sec_id, ver_id)
-    print(service_account_info)
+
     # Use the retrieved key to create credentials
     creds = Credentials.from_service_account_info(
         service_account_info,
