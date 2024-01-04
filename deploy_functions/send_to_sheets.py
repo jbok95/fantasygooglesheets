@@ -1,26 +1,56 @@
 """Sends data to Google Sheets"""
+import json
 import gspread
 from google.oauth2.service_account import Credentials
 from google.cloud import secretmanager
-import json
 
-def get_secret(project_id, secret_id, version_id="latest"):
+def access_secret_version(
+    project_id: str, secret_id: str, version_id: str
+) -> secretmanager.AccessSecretVersionResponse:
+    """
+    Access the payload for the given secret version if one exists. The version
+    can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
+    """
+
+    # Create the Secret Manager client.
     client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret version.
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(name=name)
-    return response.payload.data.decode("UTF-8")    
+
+    # Access the secret version.
+    response = client.access_secret_version(request={"name": name})
+
+    # # Verify payload checksum.
+    # crc32c = google_crc32c.Checksum()
+    # crc32c.update(response.payload.data)
+    # if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
+    #     print("Data corruption detected.")
+    #     return response
+
+    # Access the secret payload.
+    payload = response.payload.data.decode("UTF-8")
+
+    # Convert payload to dictionary
+    payload_dict = json.loads(payload)
+
+    return payload_dict
 
 def get_credentials():
-    secret_project_id = "postseasonfantasy"
-    secret_id = "postseasonfantasy-secret"
+    """
+    Return the service account's credentials for driving Google Sheets
+    """
+    proj_id = "postseasonfantasy"
+    sec_id = "postseasonfantasy-secret"
+    ver_id = 1
 
-    # Retrieve the service account key from Secret Manager
-    service_account_key_json = get_secret(secret_project_id, secret_id)
-
+    service_account_info = access_secret_version(proj_id, sec_id, ver_id)
+    print(service_account_info)
     # Use the retrieved key to create credentials
     creds = Credentials.from_service_account_info(
-        service_account_key_json,
-        scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"],
+        service_account_info,
+        scopes=["https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive"],
     )
 
     return creds
