@@ -1,4 +1,5 @@
 """Main driver to update Google Sheets for Postseason Fantasy Football"""
+import json
 from deploy_functions.projections import get_projections
 from deploy_functions.send_to_sheets import update_projections, update_stats
 from deploy_functions.stats import get_football_stats
@@ -27,7 +28,8 @@ def postseasonfantasy(request):
 
     # Takes inputs from Cloud Scheduler
     else:
-        request_json = request.json()
+        # request_json = request.json()
+        request_json = json.loads(request)
         run_projections = request_json.get('run_projections')
         workbook = request_json.get('workbook')
         projections_worksheet = request_json.get('projections_worksheet')
@@ -58,4 +60,22 @@ def postseasonfantasy(request):
     update_stats(filtered_stats, workbook, stats_worksheet)
 
 if __name__ == "__main__":
-    postseasonfantasy({})
+    my_request = {
+        "run_projections":"True",
+        "workbook":"2024 Postseason Fantasy",
+        "projections_worksheet":"Master Player Pool",
+        "espn_urls":[
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
+            ],
+        "stats_worksheet":"Wild Card Player Stats"
+        }
+    my_json = json.dumps(my_request)
+    postseasonfantasy(my_json)
