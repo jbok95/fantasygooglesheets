@@ -1,19 +1,29 @@
 """Sends data to Google Sheets"""
 import gspread
 from google.oauth2.service_account import Credentials
+from google.cloud import secretmanager
 import json
 
-def get_credentials():
-    # Load the service account credentials from the file
-    with open('deploy_functions/config.json', 'r') as f:
-        service_account_info = json.load(f)
-    
-    creds = Credentials.from_service_account_info(service_account_info,
-                                                  scopes=['https://www.googleapis.com/auth/spreadsheets',
-                                                          'https://www.googleapis.com/auth/drive'])
-    
-    return creds
+def get_secret(project_id, secret_id, version_id="latest"):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode("UTF-8")    
 
+def get_credentials():
+    secret_project_id = "postseasonfantasy"
+    secret_id = "postseasonfantasy-secret"
+
+    # Retrieve the service account key from Secret Manager
+    service_account_key_json = get_secret(secret_project_id, secret_id)
+
+    # Use the retrieved key to create credentials
+    creds = Credentials.from_service_account_info(
+        service_account_key_json,
+        scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"],
+    )
+
+    return creds
 
 def update_projections(player_list, workbook_title, sheet_title):
     """
