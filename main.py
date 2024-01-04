@@ -65,10 +65,12 @@ def postseasonfantasy(request):
     # Write stats to Google Sheet
     update_stats(filtered_stats, workbook, stats_worksheet)
 
+    return "Success!"
+
 if __name__ == "__main__":
     my_request = {
         "run_projections":"True",
-        "workbook":"2024 Postseason Fantasy",
+        "workbook":"Postseason Fantasy Stats Master",
         "projections_worksheet":"Master Player Pool",
         "espn_urls":[
             "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
