@@ -41,6 +41,7 @@ def postseasonfantasy(request):
         projections_worksheet = request_json.get('projections_worksheet')
         espn_urls = request_json.get('espn_urls')
         stats_worksheet = request_json.get('stats_worksheet')
+        start_cell = request_json.get('start_cell')
 
     # Reruns player projections if true
     if run_projections:
@@ -63,7 +64,7 @@ def postseasonfantasy(request):
     for url in espn_urls:
         filtered_stats = get_football_stats(player_stats, url)
     # Write stats to Google Sheet
-    update_stats(filtered_stats, workbook, stats_worksheet)
+    update_stats(filtered_stats, workbook, stats_worksheet, start_cell)
 
     return "Success!"
 
@@ -73,17 +74,10 @@ if __name__ == "__main__":
         "workbook":"Postseason Fantasy Stats Master",
         "projections_worksheet":"Master Player Pool",
         "espn_urls":[
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547639"
             ],
-        "stats_worksheet":"Wild Card Player Stats"
+        "stats_worksheet":"Wild Card Player Stats",
+        "start_cell":"A3"
         }
     my_json = json.dumps(my_request)
     postseasonfantasy(my_json)

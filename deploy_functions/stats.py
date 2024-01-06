@@ -41,6 +41,12 @@ def get_football_stats(player_stats, url):
                 for athlt_data in stats_data['athlts']:
                     # Extracting specific information
                     stats_values = athlt_data['stats']
+
+                    # Check if the length of 'stats' is equal to the length of 'keys'
+                    if len(stats_values) != len(stats_data['keys']):
+                        # Add '0' to 'stats' to match the length of 'keys'
+                        stats_values.extend(['0'] * (len(stats_data['keys']) - len(stats_values)))
+
                     athlete_name = athlt_data['athlt']['dspNm']
                     keys = stats_data['keys']
 

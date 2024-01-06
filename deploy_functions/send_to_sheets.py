@@ -105,7 +105,7 @@ def update_projections(player_list, workbook_title, sheet_title):
     # Batch update the sheet with all rows
     sheet.update('A1', rows_to_update)
 
-def update_stats(player_stats, workbook_title, sheet_title):
+def update_stats(player_stats, workbook_title, sheet_title, start_cell):
     """
     Sends stats to Google Sheets
 
@@ -152,7 +152,7 @@ def update_stats(player_stats, workbook_title, sheet_title):
     ]
 
     # Prepare a list of lists for batch update
-    rows_to_update = [headers]
+    rows_to_update = []
 
     # Add player information to the list
     for player_name, stats in player_stats.items():
@@ -162,4 +162,4 @@ def update_stats(player_stats, workbook_title, sheet_title):
         rows_to_update.append(row_data)
 
     # Batch update the sheet with all rows
-    sheet.update('A2', rows_to_update)
+    sheet.update(start_cell, rows_to_update)
