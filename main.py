@@ -16,7 +16,7 @@ def postseasonfantasy(request):
     else:
         request_json = request.get_json()
 
-    run_projections = request_json.get('run_projections')
+    run_projections = eval(request_json.get('run_projections'))
     workbook = request_json.get('workbook')
     projections_worksheet = request_json.get('projections_worksheet')
     espn_urls = request_json.get('espn_urls')
