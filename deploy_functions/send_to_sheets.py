@@ -1,4 +1,5 @@
 """Sends data to Google Sheets"""
+from datetime import datetime
 import json
 import gspread
 from google.oauth2.service_account import Credentials
@@ -20,13 +21,6 @@ def access_secret_version(
 
     # Access the secret version.
     response = client.access_secret_version(request={"name": name})
-
-    # # Verify payload checksum.
-    # crc32c = google_crc32c.Checksum()
-    # crc32c.update(response.payload.data)
-    # if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
-    #     print("Data corruption detected.")
-    #     return response
 
     # Access the secret payload.
     payload = response.payload.data.decode("UTF-8")
@@ -135,7 +129,7 @@ def update_stats(player_stats, workbook_title, sheet_title, start_cell):
         workbook = gc.create(workbook_title)
         sheet = workbook.add_worksheet(title=sheet_title, rows=1, cols=1)
 
-    # Write headers
+    # Write headers - must match the payload headers that you are filtering for
     headers = [
         'name',
         'passingTouchdowns',
@@ -163,3 +157,8 @@ def update_stats(player_stats, workbook_title, sheet_title, start_cell):
 
     # Batch update the sheet with all rows
     sheet.update(start_cell, rows_to_update)
+
+    # Inputs the time of update so everyone knows how recent stats are
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%d/%m/%Y %H:%M")
+    sheet.update('O3', formatted_time)
