@@ -74,7 +74,8 @@ if __name__ == "__main__":
         "workbook":"Postseason Fantasy Stats Master",
         "projections_worksheet":"Master Player Pool",
         "espn_urls":[
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547639"
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547639",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547644"
             ],
         "stats_worksheet":"Wild Card Player Stats",
         "start_cell":"A3"

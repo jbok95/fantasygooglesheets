@@ -34,7 +34,10 @@ def get_football_stats(player_stats, url):
 
     if json_data:
         # Extracting the stats data from the JSON structure
-        bxscr_data = json_data['page']['content']['gamepackage']['bxscr']
+        try:
+            bxscr_data = json_data['page']['content']['gamepackage']['bxscr']
+        except KeyError:
+            return None
 
         for bxscr_item in bxscr_data:
             for stats_data in bxscr_item.get('stats', []):
