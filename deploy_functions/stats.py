@@ -36,8 +36,9 @@ def get_football_stats(player_stats, url):
         # Extracting the stats data from the JSON structure
         try:
             bxscr_data = json_data['page']['content']['gamepackage']['bxscr']
+        # Makes blank boxscore data dictionary if game hasn't started yet
         except KeyError:
-            return None
+            bxscr_data = {}
 
         for bxscr_item in bxscr_data:
             for stats_data in bxscr_item.get('stats', []):

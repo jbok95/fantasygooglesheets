@@ -8,40 +8,20 @@ from deploy_functions.stats import get_football_stats
 def postseasonfantasy(request):
     """Drives all functions located in deploy_functions"""
 
-    # Takes inputs from local drive
-    if request is None:
-        run_projections = True
-        workbook = "2024 Postseason Fantasy"
-        projections_worksheet = "Master Player Pool"
-        espn_urls = [
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547623",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547624",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547626",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547627",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547628",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547632",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547633",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547634",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547635"
-        ]
-        stats_worksheet = "Wild Card Player Stats"
+    # If request is from local json
+    if isinstance(request, str):
+        request_json = json.loads(request)
 
-    # Takes inputs from Cloud Scheduler
+    # If request is from Cloud Scheduler request
     else:
-        # If request is from local json
-        if isinstance(request, str):
-            request_json = json.loads(request)
+        request_json = request.get_json()
 
-        # If request is from Cloud Scheduler request
-        else:
-            request_json = request.get_json()
-
-        run_projections = request_json.get('run_projections')
-        workbook = request_json.get('workbook')
-        projections_worksheet = request_json.get('projections_worksheet')
-        espn_urls = request_json.get('espn_urls')
-        stats_worksheet = request_json.get('stats_worksheet')
-        start_cell = request_json.get('start_cell')
+    run_projections = request_json.get('run_projections')
+    workbook = request_json.get('workbook')
+    projections_worksheet = request_json.get('projections_worksheet')
+    espn_urls = request_json.get('espn_urls')
+    stats_worksheet = request_json.get('stats_worksheet')
+    start_cell = request_json.get('start_cell')
 
     # Reruns player projections if true
     if run_projections:
@@ -63,6 +43,7 @@ def postseasonfantasy(request):
     # Add stats for each game
     for url in espn_urls:
         filtered_stats = get_football_stats(player_stats, url)
+
     # Write stats to Google Sheet
     update_stats(filtered_stats, workbook, stats_worksheet, start_cell)
 
@@ -70,12 +51,13 @@ def postseasonfantasy(request):
 
 if __name__ == "__main__":
     my_request = {
-        "run_projections":"True",
+        "run_projections":"False",
         "workbook":"Postseason Fantasy Stats Master",
         "projections_worksheet":"Master Player Pool",
         "espn_urls":[
             "https://www.espn.com/nfl/boxscore/_/gameId/401547639",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547644"
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547644",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547641",
             ],
         "stats_worksheet":"Wild Card Player Stats",
         "start_cell":"A3"

@@ -67,7 +67,6 @@ def update_projections(player_list, workbook_title, sheet_title):
     Returns:
     - None: returns a print success if able to write data
     """
-    
     creds = get_credentials()
     gc = gspread.authorize(creds)
 
@@ -118,11 +117,6 @@ def update_stats(player_stats, workbook_title, sheet_title, start_cell):
     Returns:
     - None: returns a print success if able to write data
     """
-    # Check if player_stats is None
-    if player_stats is None:
-        print("player_stats is None. Exiting function.")
-        return
-
     creds = get_credentials()
     gc = gspread.authorize(creds)
 
