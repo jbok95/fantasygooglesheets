@@ -161,4 +161,4 @@ def update_stats(player_stats, workbook_title, sheet_title, start_cell):
     # Inputs the time of update so everyone knows how recent stats are
     current_time = datetime.now()
     formatted_time = current_time.strftime("%d/%m/%Y %H:%M")
-    sheet.update('O3', formatted_time)
+    sheet.update('R3', formatted_time)

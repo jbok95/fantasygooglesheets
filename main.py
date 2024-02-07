@@ -27,10 +27,10 @@ def postseasonfantasy(request):
     if run_projections:
         player_list = []
         fantasypros_urls = [
-            "https://www.fantasypros.com/nfl/rankings/qb.php",
-            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb.php",
-            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr.php",
-            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-te.php"
+            "https://www.fantasypros.com/nfl/rankings/qb.php?week=22",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb.php?week=22",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr.php?week=22",
+            "https://www.fantasypros.com/nfl/rankings/half-point-ppr-te.php?week=22"
         ]
         # Add projections for each position
         for url in fantasypros_urls:
@@ -51,16 +51,15 @@ def postseasonfantasy(request):
 
 if __name__ == "__main__":
     my_request = {
-        "run_projections":"False",
+        "run_projections":"True",
         "workbook":"Postseason Fantasy Stats Master",
         "projections_worksheet":"Master Player Pool",
         "espn_urls":[
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547639",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547644",
-            "https://www.espn.com/nfl/boxscore/_/gameId/401547641",
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547379", #KC/BAL CC
+            "https://www.espn.com/nfl/boxscore/_/gameId/401547380" #DET/SF CC
             ],
-        "stats_worksheet":"Wild Card Player Stats",
-        "start_cell":"A3"
+        "stats_worksheet":"Super Bowl Player Stats",
+        "start_cell":"D3"
         }
     my_json = json.dumps(my_request)
     postseasonfantasy(my_json)
